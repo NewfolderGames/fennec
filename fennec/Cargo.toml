@@ -1,0 +1,8 @@
+[package]
+name = "fennec"
+version = "0.1.0"
+authors = ["NewfolderGames <me@newfolder.games>"]
+edition = "2018"
+
+[dependencies]
+fennec-math = { path = "../fennec-math" }
