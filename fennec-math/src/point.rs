@@ -54,57 +54,46 @@ generate_point!(Point4, { x, y, z, w });
 #[cfg(test)]
 mod tests {
 
-	use super::{ Point2, Point3 };
+	use super::{ Point1, Point2, Point3, Point4 };
 
-	#[test]
-	fn point2() {
+	macro_rules! test_point {
 
-		{
-			let mut point2 = Point2::new(1.1, 2.2);
-		
-			assert_eq!(point2.x, 1.1);
-			assert_eq!(point2.y, 2.2);
-
-			point2.x = 123.456;
-			point2.y = 456.789;
-
-			assert_eq!(point2.x, 123.456);
-			assert_eq!(point2.y, 456.789);
-		}
-		{
-			let point2 = Point2::new(1.2, 3.4);
-			let point2_other = Point2::new(2.4, 6.8);
-
-			let add = point2 + point2_other;
-			let sub = point2 - point2_other;
-			let mul = point2 * point2_other;
-			let div = point2 / point2_other;
-			let rem = point2 % point2_other;
+		($name:ident, $Point:ident { $( $field:ident:$input:literal ),+ }) => {
 			
-			assert_eq!(add.x, 1.2 + 2.4);
-			assert_eq!(add.y, 3.4 + 6.8);
-		}
+			#[test]
+			fn $name() {
+
+				{
+					let p = $Point::new($( $input ),+);
+
+					$( assert_eq!(p.$field, $input); )+
+						
+					let add = p + p;
+					let sub = p - p;
+					let mul = p * p;
+					let div = p / p;
+					let rem = p % p;
+						
+					$(
+						assert_eq!(add.$field, $input + $input);
+						assert_eq!(sub.$field, $input - $input);
+						assert_eq!(mul.$field, $input * $input);
+						assert_eq!(div.$field, $input / $input);
+						assert_eq!(rem.$field, $input % $input);
+					)+
+
+				}
+
+			}
+
+		};
 
 	}
 
-	#[test]
-	fn point3() {
-
-		let mut point3 = Point3::new(1.1, 2.2, 3.3);
-		
-		assert_eq!(point3.x, 1.1);
-		assert_eq!(point3.y, 2.2);
-		assert_eq!(point3.z, 3.3);
-
-		point3.x = 123.456;
-		point3.y = 456.789;
-		point3.z = 789.101;
-
-		assert_eq!(point3.x, 123.456);
-		assert_eq!(point3.y, 456.789);
-		assert_eq!(point3.z, 789.101);
-
-	}
+	test_point!(test_point1, Point1 { x: 1.2 });
+	test_point!(test_point2, Point2 { x: 1.2, y: 2.3 });
+	test_point!(test_point3, Point3 { x: 1.2, y: 2.3, z: 3.4 });
+	test_point!(test_point4, Point4 { x: 1.2, y: 2.3, z: 3.4, w: 4.5 });
 
 }
 
