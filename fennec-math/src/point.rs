@@ -6,13 +6,15 @@ use std::ops::*;
 macro_rules! generate_point {
 
 	($Point:ident { $( $element:ident ),+ } ) => {
-	
+
 		// Struct.
 
 		#[derive(Clone, Copy, Debug)]
 		pub struct $Point<T = f32> {
 			$( pub $element: T ),+
 		}
+
+		// Base functions.
 
 		impl<T> $Point<T> {
 			
@@ -21,8 +23,6 @@ macro_rules! generate_point {
 			}
 
 		}
-
-
 
 		// Operators.
 
@@ -93,7 +93,7 @@ mod tests {
 					mul *= p;
 					div /= p;
 					rem %= p;
-
+					
 					$(
 						assert_eq!(add.$field, $input + $input + $input);
 						assert_eq!(sub.$field, $input - $input - $input);
