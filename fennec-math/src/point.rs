@@ -2,46 +2,37 @@ use std::ops::*;
 
 // Macros.
 
-macro_rules! impl_operator_self {
-	
-	($ops:ident, $method:ident, $operator:tt, $struct:ident, { $( $field:ident ),+ }) => {
-	
-		impl<T: $ops<Output = T>> $ops for $struct<T> {
-
-			type Output = Self;
-			fn $method(self, other: Self) -> Self::Output {
-				Self::new($( self.$field $operator other.$field ),+)
-			}
-
-		}
-
-	};
-
-}
-
 /// Generates point structs.
 macro_rules! generate_point {
 
-	($struct:ident, { $( $field:ident ),+ } ) => {
+	($Point:ident, { $( $element:ident ),+ } ) => {
 		
 		#[derive(Copy, Clone)]
-		pub struct $struct<T = f32> {
-			$( pub $field: T, )+
+		pub struct $Point<T = f32> {
+			$( pub $element: T, )+
 		}
 
-		impl<T> $struct<T> {
+		impl<T> $Point<T> {
 			
-			pub fn new($( $field: T ),+) -> Self {
-				Self { $( $field: $field ),+ }
+			pub fn new($( $element: T ),+) -> Self {
+				Self { $( $element: $element ),+ }
 			}
 
 		}
 
-		impl_operator_self!(Add, add, +, $struct, { $( $field ),+ });
-		impl_operator_self!(Sub, sub, -, $struct, { $( $field ),+ });
-		impl_operator_self!(Mul, mul, *, $struct, { $( $field ),+ });
-		impl_operator_self!(Div, div, /, $struct, { $( $field ),+ });
-		impl_operator_self!(Rem, rem, %, $struct, { $( $field ),+ });
+		impl_binary_op!(impl Add for $Point { add({ $( $element ),+ }) });
+		impl_binary_op!(impl Sub for $Point { sub({ $( $element ),+ }) });
+		impl_binary_op!(impl Mul for $Point { mul({ $( $element ),+ }) });
+		impl_binary_op!(impl Div for $Point { div({ $( $element ),+ }) });
+		impl_binary_op!(impl Rem for $Point { rem({ $( $element ),+ }) });
+	
+		impl_assign_op!(impl AddAssign for $Point { add_assign({ $( $element ),+ }) });
+		impl_assign_op!(impl SubAssign for $Point { sub_assign({ $( $element ),+ }) });
+		impl_assign_op!(impl MulAssign for $Point { mul_assign({ $( $element ),+ }) });
+		impl_assign_op!(impl DivAssign for $Point { div_assign({ $( $element ),+ }) });
+		impl_assign_op!(impl RemAssign for $Point { rem_assign({ $( $element ),+ }) });
+
+		impl_unary_op!(impl Neg for $Point { neg({ $( $element ),+ }) });
 
 	}
 
@@ -89,7 +80,7 @@ mod tests {
 			let mul = point2 * point2_other;
 			let div = point2 / point2_other;
 			let rem = point2 % point2_other;
-
+			
 			assert_eq!(add.x, 1.2 + 2.4);
 			assert_eq!(add.y, 3.4 + 6.8);
 		}
