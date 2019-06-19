@@ -1,3 +1,8 @@
+// Operator macros.
+//
+// TODO: Maybe move to other files?
+
+/// Implements a binary operator.
 macro_rules! impl_binary_op {
 	
 	(impl $Ops:ident for $Struct:ident { $method:ident({ $( $field:ident ),+ }) }) => {
@@ -24,6 +29,7 @@ macro_rules! impl_binary_op {
 
 }
 
+/// Implements a assign operator.
 macro_rules! impl_assign_op {
 	
 	(impl $Ops:ident for $Struct:ident { $method:ident({ $( $field:ident ),+ }) }) => {
@@ -36,10 +42,19 @@ macro_rules! impl_assign_op {
 
 		}
 
+		impl<T> $Ops<T> for $Struct<T> where T: $Ops<T> + Copy {
+
+			fn $method(&mut self, other: T) {
+				$( self.$field.$method(other); )+
+			}
+
+		}
+
 	};
 
 }
 
+/// Implements a unary operator.
 macro_rules! impl_unary_op {
 
 	(impl $Ops:ident for $Struct:ident { $method:ident({ $( $field:ident ),+ }) }) => {

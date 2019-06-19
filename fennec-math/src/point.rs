@@ -2,14 +2,16 @@ use std::ops::*;
 
 // Macros.
 
-/// Generates point structs.
+/// Generates a point struct.
 macro_rules! generate_point {
 
-	($Point:ident, { $( $element:ident ),+ } ) => {
-		
-		#[derive(Copy, Clone)]
+	($Point:ident { $( $element:ident ),+ } ) => {
+	
+		// Struct.
+
+		#[derive(Clone, Copy, Debug)]
 		pub struct $Point<T = f32> {
-			$( pub $element: T, )+
+			$( pub $element: T ),+
 		}
 
 		impl<T> $Point<T> {
@@ -19,6 +21,10 @@ macro_rules! generate_point {
 			}
 
 		}
+
+
+
+		// Operators.
 
 		impl_binary_op!(impl Add for $Point { add({ $( $element ),+ }) });
 		impl_binary_op!(impl Sub for $Point { sub({ $( $element ),+ }) });
@@ -40,12 +46,12 @@ macro_rules! generate_point {
 
 
 
-// Make point structs.
+// Generate point structs.
 
-generate_point!(Point1, { x });
-generate_point!(Point2, { x, y });
-generate_point!(Point3, { x, y, z });
-generate_point!(Point4, { x, y, z, w });
+generate_point!(Point1 { x });
+generate_point!(Point2 { x, y });
+generate_point!(Point3 { x, y, z });
+generate_point!(Point4 { x, y, z, w });
 
 
 
@@ -68,11 +74,11 @@ mod tests {
 
 					$( assert_eq!(p.$field, $input); )+
 						
-					let add = p + p;
-					let sub = p - p;
-					let mul = p * p;
-					let div = p / p;
-					let rem = p % p;
+					let mut add = p + p;
+					let mut sub = p - p;
+					let mut mul = p * p;
+					let mut div = p / p;
+					let mut rem = p % p;
 						
 					$(
 						assert_eq!(add.$field, $input + $input);
@@ -80,6 +86,20 @@ mod tests {
 						assert_eq!(mul.$field, $input * $input);
 						assert_eq!(div.$field, $input / $input);
 						assert_eq!(rem.$field, $input % $input);
+					)+
+
+					add += p;
+					sub -= p;
+					mul *= p;
+					div /= p;
+					rem %= p;
+
+					$(
+						assert_eq!(add.$field, $input + $input + $input);
+						assert_eq!(sub.$field, $input - $input - $input);
+						assert_eq!(mul.$field, $input * $input * $input);
+						assert_eq!(div.$field, $input / $input / $input);
+						assert_eq!(rem.$field, $input % $input % $input);
 					)+
 
 				}
