@@ -1,25 +1,54 @@
 use std::ops::*;
+use num_traits::{ Zero, One };
 
 // Macros.
 
-/// Generates a point struct.
+/// Generate a point struct.
 macro_rules! generate_point {
 
 	($Point:ident { $( $element:ident ),+ } ) => {
 
 		// Struct.
 
-		#[derive(Clone, Copy, Debug)]
+		#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 		pub struct $Point<T = f32> {
 			$( pub $element: T ),+
 		}
 
-		// Base functions.
+		// Construct functions.
 
 		impl<T> $Point<T> {
 			
+			/// Create a new point.
 			pub fn new($( $element: T ),+) -> Self {
 				Self { $( $element: $element ),+ }
+			}
+
+		}
+
+		impl<T> $Point<T> where T: Copy {
+
+			/// Create a new point with all its elements set to input value.
+			pub fn splat(value: T) -> Self {
+				Self { $( $element: value ),+ }
+			}
+
+		}
+
+		impl<T> $Point<T> where T: Zero {
+
+			/// Create a new point with all its elements set to zero.
+			pub fn zero() -> Self {
+				Self { $( $element: T::zero() ),+ }
+			}
+
+		}
+
+		impl<T> $Point<T> where T: One {
+
+			/// Create a new point with all its elements set to one.
+			pub fn one() -> Self {
+				Self { $( $element: T::one() ),+ }
 			}
 
 		}
@@ -79,7 +108,7 @@ mod tests {
 					let mut mul = p * p;
 					let mut div = p / p;
 					let mut rem = p % p;
-						
+					
 					$(
 						assert_eq!(add.$field, $input + $input);
 						assert_eq!(sub.$field, $input - $input);

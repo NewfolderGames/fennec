@@ -1,4 +1,5 @@
 use std::ops::*;
+use num_traits::{ Zero, One };
 
 // Macros.
 
@@ -20,6 +21,33 @@ macro_rules! generate_vector {
 			
 			pub fn new($( $element:T ),+) -> Self {
 				Self { $( $element: $element ),+ }
+			}
+
+		}
+
+		impl<T> $Vector<T> where T: Copy {
+
+			/// Create a new vector with all its elements set to input value.
+			pub fn splat(value: T) -> Self {
+				Self { $( $element: value ),+ }
+			}
+
+		}
+
+		impl<T> $Vector<T> where T: Zero {
+
+			/// Create a new vector with all its elements set to zero.
+			pub fn zero() -> Self {
+				Self { $( $element: T::zero() ),+ }
+			}
+
+		}
+
+		impl<T> $Vector<T> where T: One {
+
+			/// Create a new vector with all its elements set to one.
+			pub fn one() -> Self {
+				Self { $( $element: T::one() ),+ }
 			}
 
 		}

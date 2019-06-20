@@ -17,7 +17,7 @@ macro_rules! impl_binary_op {
 		}
 		
 		impl<T> $Ops<T> for $Struct<T> where T: $Ops<Output = T> + Copy {
-			
+
 			type Output = Self;
 			fn $method(self, other: T) -> Self::Output {
 				Self::new($( self.$field.$method(other) ),+)
