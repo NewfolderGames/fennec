@@ -1,7 +1,3 @@
-// Operator macros.
-//
-// TODO: Maybe move to other files?
-
 /// Implements a binary operator.
 macro_rules! impl_binary_op {
 	

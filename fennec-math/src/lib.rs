@@ -3,6 +3,8 @@
 #[macro_use]
 mod macros;
 
+mod traits;
+
 mod point;
 mod vector;
 
