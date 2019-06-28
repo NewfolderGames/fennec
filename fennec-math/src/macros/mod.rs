@@ -1,3 +1,4 @@
 #![macro_use]
 
-pub mod operator;
+pub mod traits;
+pub mod operators;

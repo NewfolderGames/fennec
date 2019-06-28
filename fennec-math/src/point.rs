@@ -1,6 +1,8 @@
 use std::ops::*;
 use num_traits::{ Zero, One };
 
+use crate::traits::{ Splat };
+
 // Macros.
 
 /// Generate a point struct.
@@ -11,11 +13,11 @@ macro_rules! generate_point {
 		// Struct.
 
 		#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
-		pub struct $Point<T = f32> {
+		pub struct $Point<T> {
 			$( pub $element: T ),+
 		}
 
-		// Construct functions.
+		// Constructors.
 
 		impl<T> $Point<T> {
 			
@@ -26,32 +28,12 @@ macro_rules! generate_point {
 
 		}
 
-		impl<T> $Point<T> where T: Copy {
+		impl_construct_trait!(impl Splat for $Point { $( $element ),+ });
 
-			/// Create a new point with all its elements set to input value.
-			pub fn splat(value: T) -> Self {
-				Self { $( $element: value ),+ }
-			}
+		// Number.
 
-		}
-
-		impl<T> $Point<T> where T: Zero {
-
-			/// Create a new point with all its elements set to zero.
-			pub fn zero() -> Self {
-				Self { $( $element: T::zero() ),+ }
-			}
-
-		}
-
-		impl<T> $Point<T> where T: One {
-
-			/// Create a new point with all its elements set to one.
-			pub fn one() -> Self {
-				Self { $( $element: T::one() ),+ }
-			}
-
-		}
+		impl_number_trait!(impl Zero for $Point { $( $element ),+ });
+		impl_number_trait!(impl One for $Point { $( $element ),+ });
 
 		// Operators.
 
@@ -89,20 +71,39 @@ generate_point!(Point4 { x, y, z, w });
 #[cfg(test)]
 mod tests {
 
-	use super::{ Point1, Point2, Point3, Point4 };
+	use num_traits::{ Zero, One };
+
+	use crate::traits::*;
+	use crate::point::*;
 
 	macro_rules! test_point {
 
-		($name:ident, $Point:ident { $( $field:ident:$input:literal ),+ }) => {
+		($name:ident, $Point:ident { $( $field:ident:$value:literal ),+ }) => {
 			
 			#[test]
 			fn $name() {
+				
+				{
+					
+					let p1 = $Point::new($( $value ),+);
+					let p2 = $Point::splat(123.456);
+					let p3 = $Point::<f32>::zero();
+					let p4 = $Point::<f32>::one();
+
+					$(
+						assert_eq!(p1.$field, $value);
+						assert_eq!(p2.$field, 123.456);
+						assert_eq!(p3.$field, 0.0);
+						assert_eq!(p4.$field, 1.0);
+					)+
+
+				}
 
 				{
-					let p = $Point::new($( $input ),+);
+					let p = $Point::new($( $value ),+);
 
-					$( assert_eq!(p.$field, $input); )+
-						
+					$( assert_eq!(p.$field, $value); )+
+					
 					let mut add = p + p;
 					let mut sub = p - p;
 					let mut mul = p * p;
@@ -110,11 +111,11 @@ mod tests {
 					let mut rem = p % p;
 					
 					$(
-						assert_eq!(add.$field, $input + $input);
-						assert_eq!(sub.$field, $input - $input);
-						assert_eq!(mul.$field, $input * $input);
-						assert_eq!(div.$field, $input / $input);
-						assert_eq!(rem.$field, $input % $input);
+						assert_eq!(add.$field, $value + $value);
+						assert_eq!(sub.$field, $value - $value);
+						assert_eq!(mul.$field, $value * $value);
+						assert_eq!(div.$field, $value / $value);
+						assert_eq!(rem.$field, $value % $value);
 					)+
 
 					add += p;
@@ -124,11 +125,11 @@ mod tests {
 					rem %= p;
 					
 					$(
-						assert_eq!(add.$field, $input + $input + $input);
-						assert_eq!(sub.$field, $input - $input - $input);
-						assert_eq!(mul.$field, $input * $input * $input);
-						assert_eq!(div.$field, $input / $input / $input);
-						assert_eq!(rem.$field, $input % $input % $input);
+						assert_eq!(add.$field, $value + $value + $value);
+						assert_eq!(sub.$field, $value - $value - $value);
+						assert_eq!(mul.$field, $value * $value * $value);
+						assert_eq!(div.$field, $value / $value / $value);
+						assert_eq!(rem.$field, $value % $value % $value);
 					)+
 
 				}

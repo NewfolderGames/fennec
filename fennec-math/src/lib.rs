@@ -1,8 +1,8 @@
 // Modules.
 
-mod macros;
-
 mod traits;
+
+mod macros;
 
 mod point;
 mod vector;
