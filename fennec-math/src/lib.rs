@@ -1,6 +1,5 @@
 // Modules.
 
-#[macro_use]
 mod macros;
 
 mod traits;

@@ -1,3 +1,5 @@
+#![macro_use]
+
 /// Implements a binary operator.
 macro_rules! impl_binary_op {
 	
